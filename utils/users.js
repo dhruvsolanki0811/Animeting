@@ -20,11 +20,13 @@ const disconnectUser=(id)=>{
     }
 
 const getroomuser=(room)=>{
+
     const roomusers=users.filter((user)=>{
         if(room==user.room){
             return true
         }
     })
+    console.log(roomusers)
     return roomusers
 }
 module.exports={addUser,getCurrentUser,disconnectUser,getroomuser}

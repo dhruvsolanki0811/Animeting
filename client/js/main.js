@@ -9,6 +9,16 @@ const {username,room}=Qs.parse(location.search,{
 
 socket.emit('chatJoinRoom',{username,room})
 
+
+socket.on('roomuser',({room,roomusers})=>{
+    console.log(room,roomusers)
+    const roomtag= document.getElementById('room-name')
+    roomtag.innerText=room
+    const userlist= document.getElementById('users')
+    console.log(userlist)
+    userlist.innerHTML=`${roomusers.map((user)=>`<li>${user.username}</li>`).join('')}`
+    
+})
 socket.on('message',message=>{
     outputmessage(message)
 

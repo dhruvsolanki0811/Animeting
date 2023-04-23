@@ -6,8 +6,7 @@ const port = 3000
 
 const http = require('http');
 const formatMessage = require('./utils/message')
-const { addUser, getCurrentUser } = require('./utils/users')
-const { disconnect } = require('process')
+const { addUser, getCurrentUser, getroomuser,disconnectUser } = require('./utils/users')
 const botname='Admin bot'
 // app.get('/', (req, res) => res.send('Hello World!'))
 app.use(express.static(path.join(__dirname,'client')))
@@ -24,15 +23,31 @@ io.on('connect',(socket)=>{
 
     //Broadcast user disconnects except user everyone gets the message
     socket.broadcast.to(user.room).emit('message',formatMessage(botname,`A ${user.username} has joined`))
-    })
+        //send room info 
+        console.log(user.room)
+
+        io.to(user.room).emit('roomuser',{
+            room:user.room,
+            roomusers:getroomuser(user.room)
+        })
+
+})
   
 
     socket.on('disconnect',()=>{
-        const user=disconnect(socket.i)
+        const user=disconnectUser(socket.id)
         if(user){
+        console.log(user.room)
         io.to(user.room).emit('message',formatMessage(botname,`${user.username} has left`))
+        io.to(user.room).emit('roomuser',{
+            room:user.room,
+            roomusers:getroomuser(user.room)
+
+        })
+    
     }
     
+
 })
 
     socket.on('chatMessage',(msg)=>{
@@ -40,6 +55,7 @@ io.on('connect',(socket)=>{
         io.to(user.room).emit('message',formatMessage(user.username,msg))
     })
 
+   
     
 })
 
